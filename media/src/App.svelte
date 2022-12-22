@@ -13,7 +13,6 @@
 
     // import components
     import M from './M.svelte';
-    import Box from './objects/Box.svelte';
     import ParSurf from './objects/ParSurf.svelte';
     import Level from './objects/Level.svelte';
     import Curve from './objects/Curve.svelte';
@@ -57,10 +56,15 @@
         document.body.appendChild(stats.dom);
     }
 
-    let flipInfo = false,
-        shadeUp = false;
-    let scaleAnimation = false,
-        scaleUpdate;
+    let flipInfo = false;
+    let shadeUp = false;
+    let scaleAnimation = false;
+    let scaleUpdate;
+    let selection = null;
+
+    const selectObject = (uuid) => {
+        selection = uuid;
+    }
 
     let canvas;
 
@@ -394,10 +398,39 @@
 
     const altDown = (e) => {
         if (e.altKey) {
-            switch(e.code) {
-                case "Space":
-                    shadeUp = !shadeUp;
-                    break;
+            e.preventDefault;
+            let i = 0;
+            if (e.code === "Space") {
+                shadeUp = !shadeUp;
+            } else if (objects.length > 0) {
+                if (!selection) {
+                    switch (e.code) {
+                        case "BracketRight":
+                            selection = objects[objects.length-1].uuid;
+                            break;
+                        case "BracketLeft":
+                            selection = objects[0].uuid;
+                            break;
+                    }
+                } else {
+                    while (i < objects.length && objects[i].uuid !== selection) { i++; }
+                    switch(e.code) {
+                        case "BracketRight":
+                            if (i === 0) {
+                                selection = objects[objects.length-1].uuid;
+                                break;
+                            }
+                            selection = objects[i-1].uuid;
+                            break;
+                        case "BracketLeft":
+                            if (i > objects.length-2) {
+                                selection = objects[0].uuid
+                                break;
+                            }
+                            selection = objects[i+1].uuid;
+                            break;
+                    }
+                }
             }
         }
     };
@@ -663,6 +696,10 @@
                                         onUpdate={() => objects = updateObject(b, objects)}
                                         bind:update={b.update}
                                         bind:animation={b.animation}
+                                        bind:selected={selection}
+                                        on:click={selectObject(b.uuid)}
+                                        on:keydown={altDown}
+                                        objID={b.uuid}
                                     />
                                 {:else if b.kind === "graph"}
                                     <Function
@@ -677,6 +714,10 @@
                                         bind:update={b.update}
                                         bind:animation={b.animation}
                                         on:animate={animateIfNotAnimating}
+                                        bind:selected={selection}
+                                        on:click={selectObject(b.uuid)}
+                                        on:keydown={altDown}
+                                        objID={b.uuid}
                                         {gridStep}
                                     />
                                 {:else if b.kind === "level"}
@@ -692,18 +733,11 @@
                                         bind:update={b.update}
                                         bind:animation={b.animation}
                                         on:animate={animateIfNotAnimating}
+                                        bind:selected={selection}
+                                        on:click={selectObject(b.uuid)}
+                                        on:keydown={altDown}
+                                        objID={b.uuid}
                                         {gridStep}
-                                    />
-                                {:else if b.kind === "box" && b.params}
-                                    <Box
-                                        {scene}
-                                        render={requestFrameIfNotRequested}
-                                        onClose={() => objects = removeObject(b.uuid, objects)}
-                                        onUpdate={() => objects = updateObject(b, objects)}
-                                        params={b.params}
-                                        bind:update={b.update}
-                                        bind:animation={b.animation}
-                                        on:animate={animateIfNotAnimating}
                                     />
                                 {:else if b.kind === "curve"}
                                     <Curve
@@ -715,6 +749,10 @@
                                         bind:update={b.update}
                                         bind:animation={b.animation}
                                         on:animate={animateIfNotAnimating}
+                                        bind:selected={selection}
+                                        on:click={selectObject(b.uuid)}
+                                        on:keydown={altDown}
+                                        objID={b.uuid}
                                         {gridStep}
                                     />
                                 {:else if b.kind === "field"}
@@ -727,6 +765,10 @@
                                         bind:animation={b.animation}
                                         on:animate={animateIfNotAnimating}
                                         params={b.params}
+                                        bind:selected={selection}
+                                        on:click={selectObject(b.uuid)}
+                                        on:keydown={altDown}
+                                        objID={b.uuid}
                                         {gridStep}
                                         {gridMax}
                                     />
@@ -737,6 +779,10 @@
                                         onClose={() => objects = removeObject(b.uuid, objects)}
                                         onUpdate={() => objects = updateObject(b, objects)}
                                         params={b.params}
+                                        bind:selected={selection}
+                                        on:click={selectObject(b.uuid)}
+                                        on:keydown={altDown}
+                                        objID={b.uuid}
                                         {gridStep}
                                         {gridMax}
                                     />

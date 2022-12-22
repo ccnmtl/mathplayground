@@ -6,9 +6,6 @@
 
     import { create, all } from "mathjs";
 
-    const config = {};
-    const math = create(all, config);
-
     import {updateParams} from './levelWorker.js';
 
     import {
@@ -16,8 +13,8 @@
         ArrowBufferGeometry
     } from "../utils.js";
 
-    // const config = {};
-    // const math = create(all, config);
+    const config = {};
+    const math = create(all, config);
 
     export let params = {
         g: "x^2 - y^2 + z^2",
@@ -61,6 +58,8 @@
     export let render = () => {};
     export let onClose = () => {};
     export let onUpdate = () => {};
+    export let selected;
+    export let objID;
 
     export let camera,
     controls,
@@ -68,8 +67,8 @@
     gridStep;
     // showLevelCurves = false;
 
-    let hidden = false,
-        loading = false;
+    let hidden = false;
+    let loading = false;
 
     const geometry = new THREE.BufferGeometry();
     const xTraceGeometry = new THREE.BufferGeometry();
@@ -314,7 +313,7 @@
     }
 
     const shiftDown = (e) => {
-        if (shadeUp) {
+        if (shadeUp && selected === objID) {
             switch (e.key) {
                 case "Shift":
                     window.addEventListener("mousemove", onMouseMove, false);
@@ -353,7 +352,7 @@
     window.addEventListener("keyup", shiftUp, false);
 </script>
 
-<div class="boxItem">
+<div class={'boxItem' + (selected === objID ? ' selected': '')} on:click on:keydown>
     <div class="box-title">
         <span>
             <strong>Level surface </strong>
