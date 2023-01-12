@@ -85,6 +85,8 @@
     export let onUpdate = () => {};
     export let gridStep;
     export let animation = false;
+    export let selected;
+    export let objID;
     export const update = (dt) => {
         const { a, b, x, y, z } = goodParams;
         const T = a + (b - a) * params.tau;
@@ -364,7 +366,7 @@
     const texString1 = `t = ${stringifyT(params)}`;
 </script>
 
-<div class="boxItem">
+<div class={'boxItem' + (selected === objID ? ' selected': '')} on:click on:keydown>
     <div class="box-title">
         <span>
             <strong style="color: {params.color};">

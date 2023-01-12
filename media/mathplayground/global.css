@@ -60,13 +60,18 @@ body,
     background-color: rgba(0, 0, 0, 0.7);
     border: 1px solid black;
     border-radius: 1rem;
+    border: 5px solid transparent;
+}
+
+.selected {
+    border-color: white;
 }
 
 .box-title {
     display: flex;
     justify-content: space-between;
     color: white;
-    padding: 0.5em;
+    padding: 0.5rem;
 }
 
 .settings-tray button {
